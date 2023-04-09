@@ -1,6 +1,6 @@
 # BSS Hotbar Macro
 <p align="center">
-    <img src="https://cdn.horizon.pics/nY0fuTnDWS" alt="Macro screenshot preview" />
+    <img src="https://cdn.horizon.pics/6hwUbysAFz" alt="Macro screenshot preview" />
 </p>
 
 A simple hotbar macro built with Python tkinter and pynput!
