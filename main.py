@@ -3,16 +3,21 @@ import os
 import re
 import sys
 import threading
+import webbrowser
 from tkinter import *
 from tkinter import messagebox
 
 import keyboard as kbd
+import requests
+from packaging import version as version_parse
 from pynput.keyboard import Controller
 from win32 import win32gui
 
 DEFAULT_TITLE = "BSS Hotbar Macro"
 SETTINGS_PATH = "hbm-settings.json"
 HB_RANGE = range(1, 8)
+REMOTE_VERSION_URL = "https://raw.githubusercontent.com/1rens1/bss-hotbar-macro/master/version"
+UPDATE_LINK = "https://github.com/1rens1/bss-hotbar-macro/releases"
 
 
 # noinspection PyBroadException
@@ -85,8 +90,33 @@ running = False
 
 keyboard = Controller()
 
+# Updates
+updates_label = Label(root, text="checking for updates...", fg="blue", font=(None, 8))
+updates_label.place(relx=0.0, rely=1.0, x=0, y=-0, anchor=SW)  # fixed bottom left window
+
 with open(resource_path("version")) as file:
     VERSION = file.read()
+print("Running version", VERSION)
+
+
+# noinspection PyBroadException
+def check_for_updates():
+    try:
+        local_version = version_parse.parse(VERSION)
+
+        res = requests.get(REMOTE_VERSION_URL)
+        remote_version = version_parse.parse(res.text)
+        if remote_version > local_version:
+            updates_label.config(text=f"Click to download latest (v{res.text})", fg="dark orange", cursor="hand1")
+            updates_label.bind("<Button-1>", lambda _: webbrowser.open_new(UPDATE_LINK))
+        else:
+            updates_label.config(text=f"Up to date", fg="green3")
+
+    except Exception:
+        updates_label.config(text=f"Failed to check for updates", fg="dark red")
+
+
+threading.Thread(target=check_for_updates).start()
 
 # Credit
 credit = Label(root, text=f"v{VERSION} by rens#6161", fg="gray", font=(None, 8))
